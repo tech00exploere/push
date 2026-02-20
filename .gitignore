@@ -1,0 +1,15 @@
+node_modules/
+dist/
+build/
+.DS_Store
+
+# Environment files
+.env
+*.env
+!.env.example
+!**/.env.example
+
+# Project-specific folders
+blog_backend/node_modules/
+blogging_frontend/node_modules/
+blogging_frontend/dist/

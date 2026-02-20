@@ -1,0 +1,29 @@
+services:
+  - type: web
+    name: commitpost-backend
+    env: node
+    rootDir: blog_backend
+    buildCommand: npm install
+    startCommand: npm start
+    plan: free
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: 20
+      - key: PORT
+        value: 5000
+      - key: MONGO_URI
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: CLIENT_URL
+        value: https://commitpost-frontend.onrender.com
+
+  - type: static
+    name: commitpost-frontend
+    rootDir: blogging_frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    envVars:
+      - key: VITE_API_URL
+        value: https://commitpost-backend.onrender.com/api
