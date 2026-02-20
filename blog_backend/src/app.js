@@ -9,6 +9,7 @@ const app = express();
 
 const allowedOrigins = [
   "http://localhost:5173",
+  "https://pushcommitpost.vercel.app",
   process.env.CLIENT_URL,
   process.env.FRONTEND_URL,
 ].filter(Boolean);
@@ -36,3 +37,4 @@ app.use("/api/posts", postRoutes);
 app.use("/api/posts", commentRoutes);
 
 export default app;
+
