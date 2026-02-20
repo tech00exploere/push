@@ -1,8 +1,14 @@
+import path from "path";
+import { fileURLToPath } from "url";
 import dotenv from "dotenv";
+
 import connectDB from "./config/db.js";
 import app from "./app.js";
 
-dotenv.config();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+dotenv.config({ path: path.resolve(__dirname, "../.env") });
 
 const PORT = Number(process.env.PORT) || 5000;
 
@@ -18,13 +24,5 @@ const startServer = async () => {
     process.exit(1);
   }
 };
-
-process.on("unhandledRejection", (reason) => {
-  console.error("Unhandled Rejection:", reason);
-});
-
-process.on("uncaughtException", (error) => {
-  console.error("Uncaught Exception:", error);
-});
 
 startServer();
