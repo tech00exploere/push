@@ -1,4 +1,7 @@
+import mongoose from "mongoose";
 import Post from "../models/Post.model.js";
+
+const isValidId = (id) => mongoose.Types.ObjectId.isValid(id);
 
 /**
  * CREATE POST
@@ -9,9 +12,15 @@ export const createPost = async (req, res) => {
       return res.status(401).json({ message: "Not authenticated" });
     }
 
+    const { title, content } = req.body;
+
+    if (!title || !content) {
+      return res.status(400).json({ message: "Title and content are required" });
+    }
+
     const newPost = new Post({
-      title: req.body.title,
-      content: req.body.content,
+      title,
+      content,
       user: req.user._id,
     });
 
@@ -22,15 +31,12 @@ export const createPost = async (req, res) => {
   }
 };
 
-
 /**
  * GET ALL POSTS
  */
 export const getAllPosts = async (req, res) => {
   try {
-    const posts = await Post.find()
-      .populate("user", "name")
-      .sort({ createdAt: -1 });
+    const posts = await Post.find().populate("user", "name").sort({ createdAt: -1 });
 
     res.json(posts);
   } catch (err) {
@@ -43,7 +49,13 @@ export const getAllPosts = async (req, res) => {
  */
 export const getPostById = async (req, res) => {
   try {
-    const post = await Post.findById(req.params.id).populate("user", "name");
+    const { id } = req.params;
+
+    if (!isValidId(id)) {
+      return res.status(400).json({ message: "Invalid post id" });
+    }
+
+    const post = await Post.findById(id).populate("user", "name");
     if (!post) return res.status(404).json({ message: "Post not found" });
     res.json(post);
   } catch (err) {
@@ -56,12 +68,17 @@ export const getPostById = async (req, res) => {
  */
 export const updatePost = async (req, res) => {
   try {
-    const post = await Post.findById(req.params.id);
+    const { id } = req.params;
+
+    if (!isValidId(id)) {
+      return res.status(400).json({ message: "Invalid post id" });
+    }
+
+    const post = await Post.findById(id);
     if (!post) {
       return res.status(404).json({ message: "Post not found" });
     }
 
-    // ownership check
     if (post.user.toString() !== req.user._id.toString()) {
       return res.status(403).json({ message: "Not authorized" });
     }
@@ -77,7 +94,6 @@ export const updatePost = async (req, res) => {
   }
 };
 
-
 /**
  * DELETE POST
  */
@@ -87,7 +103,13 @@ export const deletePost = async (req, res) => {
       return res.status(401).json({ message: "Not authenticated" });
     }
 
-    const post = await Post.findById(req.params.id);
+    const { id } = req.params;
+
+    if (!isValidId(id)) {
+      return res.status(400).json({ message: "Invalid post id" });
+    }
+
+    const post = await Post.findById(id);
     if (!post) {
       return res.status(404).json({ message: "Post not found" });
     }

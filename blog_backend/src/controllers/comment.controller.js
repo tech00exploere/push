@@ -1,5 +1,8 @@
+import mongoose from "mongoose";
 import Comment from "../models/comment.model.js";
 import Post from "../models/Post.model.js";
+
+const isValidId = (id) => mongoose.Types.ObjectId.isValid(id);
 
 /**
  * GET all comments for a post
@@ -8,6 +11,10 @@ import Post from "../models/Post.model.js";
 export const getComments = async (req, res) => {
   try {
     const { postId } = req.params;
+
+    if (!isValidId(postId)) {
+      return res.status(400).json({ message: "Invalid post id" });
+    }
 
     const comments = await Comment.find({ post: postId })
       .populate("author", "name")
@@ -28,7 +35,11 @@ export const addComment = async (req, res) => {
     const { postId } = req.params;
     const { text } = req.body;
 
-    if (!text) {
+    if (!isValidId(postId)) {
+      return res.status(400).json({ message: "Invalid post id" });
+    }
+
+    if (!text || !text.trim()) {
       return res.status(400).json({ message: "Comment text is required" });
     }
 
@@ -38,7 +49,7 @@ export const addComment = async (req, res) => {
     }
 
     const comment = await Comment.create({
-      text,
+      text: text.trim(),
       post: postId,
       author: req.user._id,
     });
@@ -58,6 +69,10 @@ export const addComment = async (req, res) => {
 export const deleteComment = async (req, res) => {
   try {
     const { postId, commentId } = req.params;
+
+    if (!isValidId(postId) || !isValidId(commentId)) {
+      return res.status(400).json({ message: "Invalid id" });
+    }
 
     const comment = await Comment.findOne({ _id: commentId, post: postId });
     if (!comment) {
