@@ -14,7 +14,19 @@ export default function Home() {
         setPosts(res.data);
       } catch (err) {
         console.error(err);
-        setError("Failed to load posts.");
+        const apiMessage = err?.response?.data?.message;
+        const status = err?.response?.status;
+        const networkIssue = !err?.response && err?.request;
+
+        if (apiMessage) {
+          setError(apiMessage);
+        } else if (status) {
+          setError(`Failed to load posts (HTTP ${status}).`);
+        } else if (networkIssue) {
+          setError("Network error: cannot reach API.");
+        } else {
+          setError("Failed to load posts.");
+        }
       } finally {
         setLoading(false);
       }
