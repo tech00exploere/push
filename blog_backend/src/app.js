@@ -7,17 +7,33 @@ import authRoutes from "./routes/auth.routes.js";
 
 const app = express();
 
-const allowedOrigins = [
-  "http://localhost:5173",
-  "https://pushcommitpost.vercel.app",
+const normalizeOrigin = (value) => value.trim().replace(/\/+$/, "");
+
+const envOrigins = [
   process.env.CLIENT_URL,
   process.env.FRONTEND_URL,
-].filter(Boolean);
+  process.env.CORS_ORIGINS,
+]
+  .filter(Boolean)
+  .flatMap((value) => value.split(","))
+  .map((value) => normalizeOrigin(value))
+  .filter(Boolean);
+
+const allowedOriginSet = new Set([
+  "http://localhost:5173",
+  "https://pushcommitpost.vercel.app",
+  ...envOrigins,
+]);
 
 app.use(
   cors({
     origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin)) {
+      if (!origin) {
+        return callback(null, true);
+      }
+
+      const normalizedOrigin = normalizeOrigin(origin);
+      if (allowedOriginSet.has(normalizedOrigin)) {
         return callback(null, true);
       }
 
