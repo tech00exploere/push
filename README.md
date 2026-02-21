@@ -14,7 +14,9 @@ Full-stack blog app with:
 
 1. Backend env:
 - Copy `blog_backend/.env.example` to `blog_backend/.env`
-- Fill `MONGO_URI`, `JWT_SECRET`, and set `CLIENT_URL=http://localhost:5173`
+- Fill `MONGO_URI`, `JWT_SECRET`, and set:
+- `CLIENT_URL=http://localhost:5173`
+- `CORS_ORIGINS=http://localhost:5173`
 
 2. Frontend env:
 - Copy `blogging_frontend/.env.example` to `blogging_frontend/.env`
@@ -51,9 +53,13 @@ This repo includes `render.yaml` (Blueprint).
 3. Set secret env vars in backend service:
 - `MONGO_URI`
 - `JWT_SECRET`
-4. After first deploy, update:
-- Backend `CLIENT_URL` to your actual frontend Render URL.
-- Frontend `VITE_API_URL` to your actual backend Render URL + `/api`.
+4. After first deploy, update backend CORS origins:
+- Set `CORS_ORIGINS` to exact frontend origins (comma-separated).
+- Example: `https://commitpost-frontend.onrender.com,https://pushcommitpost.vercel.app`
+- Keep `CLIENT_URL` set to the primary frontend origin.
+5. Ensure frontend API URL is correct:
+- Frontend `VITE_API_URL` must be your backend URL + `/api`.
+- Example: `https://commitpost-backend.onrender.com/api`
 
 ## API health check
 
