@@ -27,7 +27,7 @@ const getUserFromStorage = () => {
     const user = localStorage.getItem("user");
     return user ? JSON.parse(user) : null;
   } catch (err) {
-    console.error("Invalid user in localStorage, clearing it");
+    console.error("Invalid user in localStorage, clearing it", err);
     localStorage.removeItem("user");
     return null;
   }
