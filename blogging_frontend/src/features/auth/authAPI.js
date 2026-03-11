@@ -1,13 +1,20 @@
-import API from "../../api/axios";
+import API from "../../api/axios.jsx";
 
-// Register new user
 export const registerUser = async (userData) => {
-  const res = await API.post("/auth/register", userData);
-  return res.data;
+  try {
+    const res = await API.post("/auth/register", userData);
+    return res.data;
+  } catch (err) {
+    // Return error message from backend or generic
+    throw err.response?.data?.message || err.message;
+  }
 };
 
-// Login existing user
 export const loginUser = async (userData) => {
-  const res = await API.post("/auth/login", userData);
-  return res.data;
+  try {
+    const res = await API.post("/auth/login", userData);
+    return res.data;
+  } catch (err) {
+    throw err.response?.data?.message || err.message;
+  }
 };
